@@ -43,6 +43,36 @@ automatically on UI work, including when the request never mentions design.
 first, change `--accent-h`, and reference the semantic tokens (`--surface`, `--text`,
 `--border`, `--accent`) instead of literals. Dark mode then costs nothing.
 
+## Does it actually work?
+
+There's a before/after fixture in [`bench/`](bench/): one small app built twice with
+**identical behavior** — `bench/baseline` with no design guidance, `bench/styled` with
+the skill applied. A 16-test parity suite drives both through `data-testid` and must
+pass unmodified on each, so every measured difference is presentational.
+
+Tier 1 results ([full report](bench/results/report.md)), using standards the skill
+doesn't control:
+
+| Metric | Baseline | Styled |
+|---|---:|---:|
+| axe-core violations (rules / nodes) | 4 / 47 | **0 / 0** |
+| Text nodes failing WCAG AA contrast | 300 | **0** |
+| Targets under 24×24px | 24 | **0** |
+| Horizontal overflow at 390px | 839px | **0** |
+| Tabbable elements with no focus indicator | 3 | **0** |
+
+**Read the caveats before quoting that.** n=1 app; I wrote both the skill and the
+baseline, so this can falsify the skill but not validate it. The report's Tier 2 section
+is explicitly labelled circular — scoring a UI against rules I wrote and then fixed it
+against proves nothing. And nothing there measures whether the result is *pretty*;
+`npm run blind` exists for that and needs a human.
+
+The exercise was worth more as a bug-finder than as a scoreboard. It turned up five real
+defects in the skill itself — status colors that failed AA as text on their own tints,
+three of seven recommended accent hues failing contrast, a false claim that hue swaps
+preserve contrast, an accent hue that made focus rings look like errors, and a broken
+OKLCH parse in the shipped validator. Those are fixed; see the commit log.
+
 ## Scope
 
 Covers visual and interaction design of interfaces. Defers charts and data viz to the

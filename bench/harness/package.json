@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "parity": "node run-parity.mjs",
+    "parity:one": "node one.mjs",
     "bench": "node run-parity.mjs && node bench.mjs",
     "measure": "node bench.mjs",
     "blind": "node blind.mjs",

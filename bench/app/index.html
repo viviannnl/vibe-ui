@@ -2,10 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Marginalia</title>
+<!-- Theme applied before first paint, so a dark-mode reload doesn't flash white. -->
+<script>
+  try {
+    const t = localStorage.getItem('theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch {}
+</script>
+<link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<a href="#main" class="skip">Skip to content</a>
 <div id="root"></div>
 <script type="module" src="app.js"></script>
 </body>

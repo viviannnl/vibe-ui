@@ -91,6 +91,28 @@ export function targetSizeAudit() {
   return small;
 }
 
+/** T1.8 — WCAG 1.4.10 Reflow: content must not require horizontal scrolling. */
+export function reflowAudit() {
+  const de = document.documentElement;
+  const overflow = de.scrollWidth - de.clientWidth;
+  const culprits = [];
+  if (overflow > 1) {
+    for (const el of document.querySelectorAll('body *')) {
+      const b = el.getBoundingClientRect();
+      if (b.right > de.clientWidth + 1 && b.width > 0) {
+        culprits.push({
+          tag: el.tagName.toLowerCase(),
+          testid: el.dataset.testid ?? null,
+          cls: String(el.className || '').split(/\s+/)[0] || null,
+          right: Math.round(b.right), width: Math.round(b.width),
+        });
+      }
+    }
+  }
+  return { overflowPx: Math.max(0, overflow), viewport: de.clientWidth,
+           culprits: culprits.slice(0, 10) };
+}
+
 /** T2.2–T2.4 — how many distinct values are actually in use. Lower = more systematic. */
 export function scaleAudit() {
   const fontSizes = new Set(), radii = new Set(), spacing = new Set();

@@ -79,6 +79,7 @@ Stated up front so the report can't overclaim:
 | T1.5 | Cumulative Layout Shift | PerformanceObserver | ↓ |
 | T1.6 | Long animation frames (>50ms) during interaction | PerformanceObserver | ↓ |
 | T1.7 | Images/controls missing accessible names | axe subset, reported separately | ↓ |
+| T1.8 | Horizontal overflow at 390px viewport | WCAG 2.1 SC 1.4.10 Reflow | ↓ |
 
 ### Tier 2 — conformance to the skill (circular; regression guard only)
 

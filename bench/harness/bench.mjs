@@ -183,6 +183,7 @@ async function measureBranch(browser, b, axeSource) {
           rec.targets = await page.evaluate(audits.targetSizeAudit);
           rec.names = await page.evaluate(audits.nameAudit);
           rec.probe = await page.evaluate(audits.stateProbe);
+          rec.reflow = await page.evaluate(audits.reflowAudit);
           if (vp.name === 'desktop') {
             rec.scales = await page.evaluate(audits.scaleAudit);
             rec.motion = await page.evaluate(audits.motionAudit);
@@ -275,6 +276,13 @@ function rollup(r) {
       (s.contrast?.worst ?? []).map(w => w.ratio)).concat([99])),
     smallTargets: Math.max(...states.map(([, s]) => s.targets?.length ?? 0)),
     missingNames: Math.max(...states.map(([, s]) => s.names?.length ?? 0)),
+    // Reflow is only meaningful at the narrow viewport.
+    reflowOverflowMobile: Math.max(...states
+      .filter(([tag]) => tag.endsWith('-mobile'))
+      .map(([, s]) => s.reflow?.overflowPx ?? 0), 0),
+    reflowCulprits: states
+      .filter(([tag]) => tag.endsWith('-mobile'))
+      .flatMap(([, s]) => s.reflow?.culprits ?? []).slice(0, 10),
     unindicatedFocus: r.focus?.unindicated.length ?? null,
     tabbable: r.focus?.tabbable ?? null,
     cls: r.perf?.cls ?? null,

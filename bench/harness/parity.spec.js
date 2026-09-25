@@ -173,11 +173,9 @@ test.describe('edge-case data is actually present', () => {
     expect(counts.some(c => c.rating === null)).toBeTruthy();
   });
 
-  test('no element overflows the viewport horizontally', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await load(page);
-    const overflow = await page.evaluate(() =>
-      document.documentElement.scrollWidth - document.documentElement.clientWidth);
-    expect(overflow).toBeLessThanOrEqual(1); // sub-pixel rounding only
-  });
 });
+
+// NOTE: horizontal overflow at narrow viewports is deliberately NOT asserted here.
+// It's a presentational defect (WCAG 1.4.10 Reflow) that the metrics harness measures
+// as a Tier 1 number. Asserting it as parity would void the comparison the moment the
+// baseline failed it — which is exactly the case we want to be able to report on.

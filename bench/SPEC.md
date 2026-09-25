@@ -7,13 +7,18 @@ Both branches implement this exactly. Behavior is fixed; only presentation may d
 
 ```
 index.html
-app.js        — identical on both branches
+app.js
 data.js       — identical on both branches
-styles.css    — THE ONLY FILE THAT MAY MEANINGFULLY DIFFER
+styles.css
 ```
 
-`index.html` may differ in markup structure and class names (styling needs it), but every
-`data-testid` below must be present with identical semantics.
+`data.js` is byte-identical across branches. `index.html`, `app.js`, and `styles.css` may
+all differ: applying the skill legitimately changes markup, not just CSS — skeleton
+loaders, richer empty states, and SVG icons all need DOM that the baseline doesn't have.
+
+**The guarantee is behavioral, not structural.** Every `data-testid` below must be present
+with identical semantics, and `harness/parity.spec.js` must pass unmodified on both
+branches. That's what makes measured differences presentational rather than functional.
 
 ## Views
 

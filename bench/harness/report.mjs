@@ -26,6 +26,7 @@ const T1 = [
   ['Worst contrast ratio found', 'contrastWorst', 'up'],
   ['Controls with no accessible name', 'missingNames', 'down'],
   ['Targets under 24×24px', 'smallTargets', 'down'],
+  ['Horizontal overflow at 390px (px)', 'reflowOverflowMobile', 'down'],
   ['Tabbable elements with no focus indicator', 'unindicatedFocus', 'down'],
   ['Cumulative Layout Shift', 'cls', 'down'],
   ['Long animation frames (>50ms)', 'longFrames', 'down'],

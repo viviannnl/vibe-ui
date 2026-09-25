@@ -42,19 +42,37 @@ formula than a red or blue of the same perceived lightness.
 `--accent-600`'s lightness by ~0.03 and re-check. This is not optional bookkeeping —
 it's the difference between a themed button that passes AA and one that doesn't.
 
+### Don't pick an accent that collides with a status hue
+
+Separate from contrast: keep the accent at least ~60° away from your `--danger` hue
+(25 by default), and ideally from `--success` (150) too.
+
+An accent near the danger hue makes the **focus ring indistinguishable from an error
+state**. A focused input gets `border-color: var(--border-focus)`; if that's a red, the
+field reads as a failed validation before the user has typed anything. The same
+applies to a green accent against success — a "saved" affordance and a primary button
+stop being separable.
+
+This is not something contrast math catches; both states can pass AA and still be
+semantically ambiguous. It shows up the moment you screenshot a focused field, which
+is the argument for the look-at-it loop in SKILL.md §6.
+
 ## Changing the accent
 
 Edit `--accent-h` in `tokens.css`. Nothing else.
 
 | Hue | Reads as | Good for | Needs accent-600 darkened? |
 |---|---|---|---|
-| 25 | terracotta / rust | warm, editorial, human | no (5.35) |
+| 25 | terracotta / rust | warm, editorial, human | no (5.33) — but see collision note |
 | 70 | amber | energetic, warning-adjacent (careful) | **yes** |
 | 145 | green | finance, health, "go" | **yes** (4.49) |
 | 195 | teal | technical, calm, trustworthy | **yes** (4.44) |
-| 230 | azure | default-safe, corporate | check |
-| 255 | blue | default in the token file | no (4.95) |
-| 320 | magenta | creative, bold | check |
+| 230 | azure | corporate, calm | **yes** (4.30) |
+| 255 | blue | default in the token file | no (4.93) |
+| 320 | magenta | creative, bold | no (5.36) |
+
+Measured, not estimated. **Three of the seven fail unmodified** — green, teal, and
+azure. Only 25, 255, and 320 ship AA-clean.
 
 **Avoid 270–290.** That indigo-violet band is the single strongest "this was
 generated" signal, because it's the default in most component libraries and

@@ -63,6 +63,11 @@ with them.
 Change that one number to fit the product. Leaving the default is how everything you
 build ends up the same color.
 
+Then **re-run the contrast validator** in `references/palette.md`. Changing hue does
+*not* preserve contrast — WCAG luminance is hue-dependent even though OKLCH lightness
+isn't — and three of the seven hues that file suggests fail AA unmodified. Also keep
+the accent ~60° clear of `--danger` (25), or your focus ring reads as an error.
+
 For Tailwind projects, map the tokens into `theme.extend` rather than using Tailwind's
 raw palette — `references/stacks.md` has the config.
 

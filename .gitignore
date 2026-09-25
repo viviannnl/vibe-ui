@@ -5,3 +5,10 @@ node_modules/
 __pycache__/
 .idea/
 .vscode/
+
+# bench
+bench/.worktrees/
+bench/results/blind/
+bench/results/blind-key.json
+bench/harness/test-results/
+bench/results/parity.json

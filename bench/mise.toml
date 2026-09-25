@@ -1,0 +1,4 @@
+# Playwright needs Node 20+; this machine's global default is 18.
+# Scoped to bench/ so the global config stays untouched.
+[tools]
+node = "22"

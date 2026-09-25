@@ -1,0 +1,16 @@
+{
+  "name": "vibe-ui-bench",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "parity": "node run-parity.mjs",
+    "bench": "node run-parity.mjs && node bench.mjs",
+    "measure": "node bench.mjs",
+    "blind": "node blind.mjs",
+    "serve": "node server.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "axe-core": "^4.10.2"
+  }
+}

@@ -8,6 +8,8 @@ __pycache__/
 
 # bench
 bench/.worktrees/
+# Results churn on every run; the final set is force-added once, deliberately.
+bench/results/
 bench/results/blind/
 bench/results/blind-key.json
 bench/harness/test-results/

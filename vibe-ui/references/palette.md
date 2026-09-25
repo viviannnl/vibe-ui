@@ -12,24 +12,49 @@ built that way have dead zones and jumps.
 OKLCH's `L` is perceptual lightness. Two consequences you get for free:
 
 1. A ramp with even `L` steps looks evenly spaced.
-2. Changing only `H` rotates hue without changing perceived lightness — so you can
-   re-theme by editing one number and your contrast ratios survive.
+2. Changing only `H` rotates hue without changing *perceived* lightness — so
+   re-theming by editing one number keeps the ramp looking like a ramp.
 
-That's the entire reason `--accent-h` works as a single-knob theme switch.
+That's why `--accent-h` works as a single-knob theme switch.
+
+### What it does NOT buy you
+
+**Perceptual lightness is not WCAG luminance, and contrast ratios do not survive a hue
+change.** WCAG relative luminance is a fixed weighted sum of sRGB channels
+(0.2126R + 0.7152G + 0.0722B); it weights green roughly 10× more than blue. OKLCH `L`
+models human lightness perception, which is a different function. So two colors with
+identical `L` and different `H` can differ by 20% in measured contrast.
+
+Measured on this file's own accent ramp, white on `--accent-600`:
+
+| Hue | Ratio | vs 4.5 floor |
+|---|---:|---|
+| 25 (terracotta) | 5.35 | pass |
+| 255 (blue) | 4.95 | pass |
+| 145 (green) | **4.49** | **fail** |
+| 195 (teal) | **4.44** | **fail** |
+
+Two of the hues recommended below fail out of the box. Green and teal sit in the
+high-luminance part of the spectrum, so at a given `L` they're "brighter" to the WCAG
+formula than a red or blue of the same perceived lightness.
+
+**So: after changing `--accent-h`, run the validator.** If white-on-accent fails, drop
+`--accent-600`'s lightness by ~0.03 and re-check. This is not optional bookkeeping —
+it's the difference between a themed button that passes AA and one that doesn't.
 
 ## Changing the accent
 
 Edit `--accent-h` in `tokens.css`. Nothing else.
 
-| Hue | Reads as | Good for |
-|---|---|---|
-| 25 | terracotta / rust | warm, editorial, human |
-| 70 | amber | energetic, warning-adjacent (careful) |
-| 145 | green | finance, health, "go" |
-| 195 | teal | technical, calm, trustworthy |
-| 230 | azure | default-safe, corporate |
-| 255 | blue | default in the token file |
-| 320 | magenta | creative, bold |
+| Hue | Reads as | Good for | Needs accent-600 darkened? |
+|---|---|---|---|
+| 25 | terracotta / rust | warm, editorial, human | no (5.35) |
+| 70 | amber | energetic, warning-adjacent (careful) | **yes** |
+| 145 | green | finance, health, "go" | **yes** (4.49) |
+| 195 | teal | technical, calm, trustworthy | **yes** (4.44) |
+| 230 | azure | default-safe, corporate | check |
+| 255 | blue | default in the token file | no (4.95) |
+| 320 | magenta | creative, bold | check |
 
 **Avoid 270–290.** That indigo-violet band is the single strongest "this was
 generated" signal, because it's the default in most component libraries and
@@ -63,6 +88,13 @@ definitions, not estimated):
 | `--accent-text` on `--surface` | 7.0:1 | 10.3:1 | link text ✓ |
 | `--border-strong` | 1.5:1 | 1.9:1 | **decorative only** |
 | `--border` | 1.3:1 | 1.3:1 | **decorative only** |
+| `--success-text` on `--success-bg` | 4.6:1 | 6.6:1 | badge label ✓ |
+| `--warning-text` on `--warning-bg` | 4.6:1 | 7.8:1 | badge label ✓ |
+| `--danger-text` on `--danger-bg` | 4.6:1 | 5.4:1 | badge label ✓ |
+| `--info-text` on `--info-bg` | 4.6:1 | 6.4:1 | badge label ✓ |
+| `--success` on `--success-bg` | 3.5:1 | 6.6:1 | **light: borders/icons only** |
+| `--info` on `--info-bg` | 3.4:1 | 6.4:1 | **light: borders/icons only** |
+| `--warning` on `--warning-bg` | 2.7:1 | 7.8:1 | **light: fills only** |
 
 Two traps worth naming, because both are easy to walk into:
 
@@ -75,6 +107,15 @@ Two traps worth naming, because both are easy to walk into:
   outline, checkbox edge, ghost button), use `--border-interactive`. Decorative
   separators have no contrast requirement at all, so both tokens are legitimate; the
   bug is using the wrong one.
+- **`--success` on `--success-bg` fails AA in light mode** (3.5:1), and so do the other
+  three status pairs. The obvious badge recipe — vivid status color on its own tint — is
+  an accessibility bug. Use `--success-text` / `--warning-text` / `--danger-text` /
+  `--info-text` for any status *text*, and keep the vivid token for borders, icon
+  strokes, and solid fills. Dark mode doesn't have this problem, which makes it easy to
+  miss if you only check one theme.
+
+Both traps above were found by measuring, not by reading. That's the argument for
+running the validator rather than trusting a palette that looks fine.
 
 ### Validator
 
@@ -83,14 +124,25 @@ tests what shipped, not what you intended.
 
 ```js
 // Contrast check against the real computed tokens.
+//
+// Colors are resolved by PAINTING them to a canvas, not by regex. This matters:
+// getComputedStyle returns modern color syntax verbatim, so a token defined as
+// oklch(0.556 0.01 250) comes back as that string, and a /[\d.]+/ match reads it
+// as rgb(0.556, 0.01, 250) -- silently scoring every OKLCH color as garbage while
+// hex-based CSS parses fine. Canvas readback normalizes anything the browser can
+// paint: oklch, lab, color-mix, hex, named.
+const _cv = document.createElement('canvas'); _cv.width = _cv.height = 1;
+const _ctx = _cv.getContext('2d', { willReadFrequently: true });
+const parse = (s) => {
+  _ctx.clearRect(0, 0, 1, 1);
+  _ctx.fillStyle = '#000';
+  _ctx.fillStyle = s;             // invalid input leaves fillStyle at #000
+  _ctx.fillRect(0, 0, 1, 1);
+  const d = _ctx.getImageData(0, 0, 1, 1).data;
+  return [d[0], d[1], d[2]];
+};
 const srgb = (c) => { c /= 255; return c <= 0.03928 ? c/12.92 : ((c+0.055)/1.055)**2.4; };
 const lum  = ([r,g,b]) => 0.2126*srgb(r) + 0.7152*srgb(g) + 0.0722*srgb(b);
-const parse = (s) => { // resolve any CSS color to rgb via the canvas
-  const d = document.createElement('div');
-  d.style.color = s; document.body.appendChild(d);
-  const rgb = getComputedStyle(d).color.match(/[\d.]+/g).slice(0,3).map(Number);
-  d.remove(); return rgb;
-};
 const ratio = (a, b) => {
   const [l1, l2] = [lum(parse(a)), lum(parse(b))].sort((x,y) => y-x);
   return (l1 + 0.05) / (l2 + 0.05);
@@ -107,6 +159,12 @@ const PAIRS = [
   ['--text-on-accent', '--accent',         4.5],
   ['--border-interactive', '--surface',    3.0],
   ['--border-focus',   '--surface',        3.0],
+  // Status TEXT on status tint. The vivid --success/--warning/--danger/--info
+  // tokens fail here in light mode; that's what the -text variants are for.
+  ['--success-text',   '--success-bg',     4.5],
+  ['--warning-text',   '--warning-bg',     4.5],
+  ['--danger-text',    '--danger-bg',      4.5],
+  ['--info-text',      '--info-bg',        4.5],
   // --border and --border-strong are decorative; WCAG sets no floor for them.
 ];
 

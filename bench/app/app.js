@@ -221,21 +221,29 @@ function renderSkeleton() {
 
 function renderRow(i) {
   const on = state.starred.has(i.id);
-  const stars = i.rating === null
+  // Rating is numeric, not a star track. A 5-glyph track needs a low-contrast
+  // "empty" color to read as empty, and at 14px that's a AA failure -- the unfilled
+  // glyphs measured 3.01:1 against a 4.5 floor. Tabular numerals scan fine in a
+  // dense table and carry the value exactly.
+  const rating = i.rating === null
     ? `<span class="muted" title="Not rated">—</span>`
-    : `<span title="${i.rating} of 5">${'★'.repeat(i.rating)}<span
-         class="ghost">${'★'.repeat(5 - i.rating)}</span></span>`;
+    : `<span class="rating">${i.rating}<span class="rating-max">/5</span></span>`;
+  // No role="button" or tabindex on the <tr>: it contains real buttons, and an
+  // interactive row wrapping interactive children is axe's nested-interactive
+  // violation (12 nodes). The title button carries the keyboard affordance; the
+  // row click stays as a mouse convenience only.
   return `
-    <tr data-testid="item-row" data-id="${i.id}" class="row" tabindex="0"
-        role="button" aria-label="Open ${esc(i.title)}">
-      <td data-label="Title" data-testid="item-title" class="c-title">${esc(i.title)}</td>
+    <tr data-testid="item-row" data-id="${i.id}" class="row">
+      <td data-label="Title" data-testid="item-title" class="c-title">
+        <button class="title-btn" data-open="${i.id}">${esc(i.title)}</button>
+      </td>
       <td data-label="Author" class="c-author">${esc(i.author)}</td>
       <td data-label="Status"><span class="badge badge-${i.status}">${cap(i.status)}</span></td>
       <td data-label="Tags" class="c-tags">${
         i.tags.length
           ? i.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')
           : `<span class="muted">—</span>`}</td>
-      <td data-label="Rating" class="c-rating num">${stars}</td>
+      <td data-label="Rating" class="c-rating num">${rating}</td>
       <td data-label="Added" class="c-added">${esc(i.added)}</td>
       <td class="c-acts">
         <button data-testid="star" data-id="${i.id}" class="btn btn-icon btn-star"
@@ -305,11 +313,10 @@ function wire() {
           e.target.closest('[data-testid="note-open"]')) return;
       openItem(tr);
     };
-    // Rows are operable by keyboard, not just mouse.
-    tr.onkeydown = (e) => {
-      if (e.target !== tr) return;
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openItem(tr); }
-    };
+  });
+  // The keyboard path is the title button, so the row needs no ARIA role.
+  document.querySelectorAll('.title-btn').forEach(b => {
+    b.onclick = (e) => { e.stopPropagation(); openItem(b.closest('[data-testid="item-row"]')); };
   });
 
   document.querySelectorAll('[data-testid="star"]').forEach(b => {

@@ -60,15 +60,27 @@
 
   /* --- Status -----------------------------------------------------------
      Fixed hues — these must NOT follow the accent, or "success" stops
-     reading as success. */
-  --success:     oklch(0.590 0.140 150);
-  --success-bg:  oklch(0.960 0.030 150);
-  --warning:     oklch(0.680 0.150  75);
-  --warning-bg:  oklch(0.965 0.045  85);
-  --danger:      oklch(0.580 0.200  25);
-  --danger-bg:   oklch(0.960 0.030  25);
-  --info:        oklch(0.600 0.130 230);
-  --info-bg:     oklch(0.960 0.030 230);
+     reading as success.
+
+     TWO tokens per status, and the distinction is load-bearing:
+       --x      the vivid color. Borders, icon fills, chart marks, solid
+                fills. Only needs 3:1, so it can stay saturated.
+       --x-text TEXT on --x-bg. Needs 4.5:1, which the vivid value does NOT
+                reach on its own tint — measured 3.46 / 2.65 / 4.14 / 3.37 for
+                success / warning / danger / info. Using --success on
+                --success-bg for a badge label is an AA failure. */
+  --success:      oklch(0.590 0.140 150);
+  --success-bg:   oklch(0.960 0.030 150);
+  --success-text: oklch(0.520 0.140 150);   /* 4.6:1 on --success-bg */
+  --warning:      oklch(0.680 0.150  75);
+  --warning-bg:   oklch(0.965 0.045  85);
+  --warning-text: oklch(0.540 0.150  75);   /* 4.6:1 on --warning-bg */
+  --danger:       oklch(0.580 0.200  25);
+  --danger-bg:    oklch(0.960 0.030  25);
+  --danger-text:  oklch(0.550 0.200  25);   /* 4.6:1 on --danger-bg */
+  --info:         oklch(0.600 0.130 230);
+  --info-bg:      oklch(0.960 0.030 230);
+  --info-text:    oklch(0.520 0.130 230);   /* 4.6:1 on --info-bg */
 
   /* --- Semantic surfaces -------------------------------------------------
      Components reference THESE, never the ramps above. That indirection is
@@ -211,14 +223,20 @@
     --accent-text:     var(--accent-300);
     --text-on-accent:  var(--n-950);
 
-    --success:    oklch(0.720 0.140 150);
-    --success-bg: oklch(0.260 0.045 150);
-    --warning:    oklch(0.800 0.140  85);
-    --warning-bg: oklch(0.280 0.050  75);
-    --danger:     oklch(0.700 0.170  25);
-    --danger-bg:  oklch(0.270 0.060  25);
-    --info:       oklch(0.720 0.120 230);
-    --info-bg:    oklch(0.260 0.045 230);
+    /* On dark tints the vivid values already clear 4.5:1 (6.6 / 7.8 / 5.4 / 6.4),
+       so --x-text can alias --x here. The split only matters in light mode. */
+    --success:      oklch(0.720 0.140 150);
+    --success-bg:   oklch(0.260 0.045 150);
+    --success-text: var(--success);
+    --warning:      oklch(0.800 0.140  85);
+    --warning-bg:   oklch(0.280 0.050  75);
+    --warning-text: var(--warning);
+    --danger:       oklch(0.700 0.170  25);
+    --danger-bg:    oklch(0.270 0.060  25);
+    --danger-text:  var(--danger);
+    --info:         oklch(0.720 0.120 230);
+    --info-bg:      oklch(0.260 0.045 230);
+    --info-text:    var(--info);
 
     /* Shadows barely read on dark; lean on --surface-raised for elevation. */
     --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.30);
@@ -229,6 +247,18 @@
 
 /* Explicit opt-in dark, for a manual theme toggle. Mirrors the block above. */
 [data-theme="dark"] {
+  --success:      oklch(0.720 0.140 150);
+  --success-bg:   oklch(0.260 0.045 150);
+  --success-text: var(--success);
+  --warning:      oklch(0.800 0.140  85);
+  --warning-bg:   oklch(0.280 0.050  75);
+  --warning-text: var(--warning);
+  --danger:       oklch(0.700 0.170  25);
+  --danger-bg:    oklch(0.270 0.060  25);
+  --danger-text:  var(--danger);
+  --info:         oklch(0.720 0.120 230);
+  --info-bg:      oklch(0.260 0.045 230);
+  --info-text:    var(--info);
   --surface:         var(--n-950);
   --surface-raised:  var(--n-900);
   --surface-sunken:  oklch(0.115 0.006 var(--n-h));

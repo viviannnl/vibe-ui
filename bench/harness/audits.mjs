@@ -5,10 +5,24 @@
 
 /** T1.2 — WCAG AA contrast of every rendered text node. */
 export function contrastAudit() {
+  // Colors MUST be resolved by painting them, not by regex. Chrome's
+  // getComputedStyle preserves modern color syntax verbatim -- a token defined as
+  // oklch(0.556 0.01 250) comes back as that exact string, and a naive
+  // /[\d.]+/g match reads it as rgb(0.556, 0.01, 250). That silently mismeasured
+  // every OKLCH color while hex-based CSS parsed fine, which made the tokenized
+  // build look catastrophically worse than the untokenized one. Canvas readback
+  // normalizes any CSS color -- oklch, lab, color-mix, named, hex -- to sRGB bytes.
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = 1;
+  const ctx = cv.getContext('2d', { willReadFrequently: true });
   const parse = (s) => {
-    const m = String(s).match(/[\d.]+/g);
-    if (!m) return null;
-    return { r: +m[0], g: +m[1], b: +m[2], a: m[3] === undefined ? 1 : +m[3] };
+    if (!s || s === 'none') return null;
+    ctx.clearRect(0, 0, 1, 1);
+    ctx.fillStyle = '#000';
+    ctx.fillStyle = s;               // invalid values leave fillStyle at #000
+    ctx.fillRect(0, 0, 1, 1);
+    const d = ctx.getImageData(0, 0, 1, 1).data;
+    return { r: d[0], g: d[1], b: d[2], a: d[3] / 255 };
   };
   const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
   const lum = (c) => 0.2126 * lin(c.r) + 0.7152 * lin(c.g) + 0.0722 * lin(c.b);

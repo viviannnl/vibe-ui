@@ -8,8 +8,12 @@ const T = (p, id) => p.locator(`[data-testid="${id}"]`);
 
 async function load(page, state) {
   await page.goto(state ? `/?state=${state}` : '/');
-  if (state !== 'loading' && state !== 'error') {
-    await T(page, 'item-count').waitFor({ timeout: 5000 }).catch(() => {});
+  // item-count renders during loading too, so waiting on it proves nothing. Wait for
+  // the loading container to go away — that's the real settled signal. Matters because
+  // locator assertions auto-retry but allInnerTexts() does not.
+  if (state !== 'loading') {
+    await T(page, 'state-loading').waitFor({ state: 'detached', timeout: 5000 })
+      .catch(() => {});
   }
 }
 

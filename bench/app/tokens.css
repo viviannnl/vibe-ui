@@ -42,10 +42,12 @@
        25  terracotta    145 green      195 teal
        255 blue          320 magenta     70 amber
      Avoid 270–290 (the indigo/violet that reads as AI-default). */
-  /* Terracotta. Chosen for a reading app, and verified: hue 25 passes every
-     contrast pair in palette.md's table. Teal (195) and green (145) do NOT --
-     they land at 4.44 and 4.49 for white-on-accent-600 against a 4.5 floor. */
-  --accent-h: 25;
+  /* Magenta. Verified: hue 320 clears every pair in palette.md's table (5.36 for
+     white-on-accent-600). Terracotta (25) also passes, but sits ON the danger hue,
+     which makes a focus ring visually indistinguishable from an error state --
+     found by looking at a focused textarea and reading it as a validation error.
+     Teal (195), green (145) and azure (230) all FAIL the 4.5 floor unmodified. */
+  --accent-h: 320;
 
   --accent-50:  oklch(0.970 0.020 var(--accent-h));
   --accent-100: oklch(0.930 0.045 var(--accent-h));

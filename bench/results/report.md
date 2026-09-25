@@ -1,7 +1,7 @@
 # vibe-ui bench — results
 
-Generated 2026-09-25T03:55:09.286Z · Node v22.23.1
-Baseline `98e4a40` → Styled `0f3109d`
+Generated 2026-09-25T04:02:14.599Z · Node v22.23.1
+Baseline `98e4a40` → Styled `aa00eb9`
 
 Both branches pass `harness/parity.spec.js` unmodified, so every difference below is
 presentational. Read the caveats in [../README.md](../README.md) before quoting any of
@@ -17,14 +17,14 @@ they carry real evidential weight.
 
 | Metric | Baseline | Styled | Change |
 |---|---:|---:|---|
-| axe-core violated rules | 4 | 2 | **improved** -2 (-50%) |
-| axe-core failing nodes | 47 | 18 | **improved** -29 (-62%) |
-| axe-core impact-weighted score | 310 | 90 | **improved** -220 (-71%) |
-| Text nodes failing WCAG AA contrast | 300 | 1012 | **regressed** +712 (+237%) |
-| Worst contrast ratio found | 1 | 1 | · |
+| axe-core violated rules | 4 | 1 | **improved** -3 (-75%) |
+| axe-core failing nodes | 47 | 1 | **improved** -46 (-98%) |
+| axe-core impact-weighted score | 310 | 5 | **improved** -305 (-98%) |
+| Text nodes failing WCAG AA contrast | 300 | 2 | **improved** -298 (-99%) |
+| Worst contrast ratio found | 1 | 4.14 | **improved** +3.14 (+314%) |
 | Controls with no accessible name | 1 | 0 | **improved** -1 (-100%) |
-| Targets under 24×24px | 24 | 0 | **improved** -24 (-100%) |
-| Horizontal overflow at 390px (px) | 839 | 170 | **improved** -669 (-80%) |
+| Targets under 24×24px | 24 | 10 | **improved** -14 (-58%) |
+| Horizontal overflow at 390px (px) | 839 | 14 | **improved** -825 (-98%) |
 | Tabbable elements with no focus indicator | 3 | 0 | **improved** -3 (-100%) |
 | Cumulative Layout Shift | 0 | 0 | · |
 | Long animation frames (>50ms) | 0 | 0 | · |
@@ -41,8 +41,7 @@ they carry real evidential weight.
 
 **Styled:**
 
-- `color-contrast` (serious, 6 nodes) — Elements must meet minimum color contrast ratio thresholds
-- `nested-interactive` (serious, 12 nodes) — Interactive controls must not be nested
+- `color-contrast` (serious, 1 node) — Elements must meet minimum color contrast ratio thresholds
 
 ### Worst contrast failures — baseline
 
@@ -61,14 +60,8 @@ they carry real evidential weight.
 
 | State | Element | Sample | Size | Ratio | Needs |
 |---|---|---|---:|---:|---:|
-| populated-light-desktop | `th` | "Title" | 12px/500 | **1** | 4.5 |
-| populated-light-desktop | `th` | "Author" | 12px/500 | **1** | 4.5 |
-| populated-light-desktop | `th` | "Status" | 12px/500 | **1** | 4.5 |
-| populated-light-desktop | `th` | "Tags" | 12px/500 | **1** | 4.5 |
-| populated-light-desktop | `th.num` | "Rating" | 12px/500 | **1** | 4.5 |
-| populated-light-desktop | `th` | "Added" | 12px/500 | **1** | 4.5 |
-| populated-light-desktop | `span.sr` | "Actions" | 12px/500 | **1** | 4.5 |
-| populated-light-desktop | `span.badge` | "Unread" | 12px/500 | **1** | 4.5 |
+| error-light-desktop | `h2` | "Couldn't load your library" | 20px/600 | **4.14** | 4.5 |
+| error-light-mobile | `h2` | "Couldn't load your library" | 20px/600 | **4.14** | 4.5 |
 
 ---
 
@@ -84,7 +77,7 @@ and as a check that the skill's own advice was actually applied.
 | Distinct font sizes rendered | 5 | 3 | **improved** -2 (-40%) |
 | Distinct spacing values rendered | 8 | 9 | **regressed** +1 (+13%) |
 | Distinct border-radius values | 4 | 3 | **improved** -1 (-25%) |
-| Distinct colors rendered | 9 | 10 | **regressed** +1 (+11%) |
+| Distinct colors rendered | 9 | 9 | · |
 | Distinct shadows rendered | 1 | 1 | · |
 | Transitions on layout properties | 13 | 1 | **improved** -12 (-92%) |
 | Infinite animations | 0 | 0 | · |
@@ -92,8 +85,8 @@ and as a check that the skill's own advice was actually applied.
 | prefers-reduced-motion handled | no | yes | **improved** |
 | `outline: none` present | yes | yes | · |
 | `!important` count | 0 | 0 | · |
-| :focus-visible rules | 0 | 5 | **improved** +5 |
-| :hover rules | 3 | 8 | **improved** +5 (+167%) |
+| :focus-visible rules | 0 | 6 | **improved** +6 |
+| :hover rules | 3 | 9 | **improved** +6 (+200%) |
 | :active rules | 0 | 2 | **improved** +2 |
 | :disabled rules | 0 | 6 | **improved** +6 |
 

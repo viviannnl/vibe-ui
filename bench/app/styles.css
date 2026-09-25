@@ -163,6 +163,7 @@ textarea[aria-invalid="true"] { border-color: var(--danger); }
   text-align: left;
   font-size: inherit;
   font-weight: var(--weight-medium);
+  min-height: 1.5rem;            /* clears the WCAG 2.5.8 24px target floor */
   color: var(--text);
   /* The 63-character unbroken title must not blow out the column. */
   overflow-wrap: anywhere;
@@ -280,7 +281,10 @@ textarea[aria-invalid="true"] { border-color: var(--danger); }
   line-height: var(--leading-snug);
 }
 .state-danger { border-color: var(--danger); background: var(--danger-bg); }
-.state-danger .i, .state-danger h2 { color: var(--danger); }
+/* --danger is 4.14:1 on --danger-bg; the heading is 20px/600, which is NOT WCAG
+   'large', so it needs 4.5. The icon is graphical and only needs 3:1. */
+.state-danger .i { color: var(--danger); }
+.state-danger h2 { color: var(--danger-text); }
 .state-danger p { color: var(--text); }
 
 .err {
@@ -416,6 +420,9 @@ textarea[aria-invalid="true"] { border-color: var(--danger); }
     border: 0;
     max-width: none;
     text-align: left;
+    /* Cells with several children (the 6-tag item) must wrap, or the children get
+       compressed and their text overflows the viewport. */
+    flex-wrap: wrap;
     /* Without this, a flex item refuses to shrink below its content's intrinsic
        width — so the 63-character unbroken title pushed the document 170px wide
        even with overflow-wrap set. min-width:0 is what lets wrapping apply. */
@@ -430,6 +437,7 @@ textarea[aria-invalid="true"] { border-color: var(--danger); }
     font-weight: var(--weight-medium);
     color: var(--text-muted);
   }
+  .c-tags .tag { flex: none; }
   .c-title { max-width: none; }
   .title-btn { font-size: var(--text-base); }
   .c-acts { justify-content: flex-end; gap: var(--sp-1); padding-top: var(--sp-2); }
